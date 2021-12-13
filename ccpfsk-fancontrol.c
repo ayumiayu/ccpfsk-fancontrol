@@ -22,10 +22,10 @@ void interval_proc(void){
 	ssize_t r_size;
 	u_int64_t t_cnt;
 	struct timespec curTime,lastTime;
-        char buffer0[1024], buffer1[1024], buffer2[1024];
-        double temp;
-        char power, data;
-        FILE *fp0, *fp1, *fp2;
+	char buffer0[1024], buffer1[1024], buffer2[1024];
+	double temp;
+	char power, data;
+	FILE *fp0, *fp1, *fp2;
 
 	tfd = timerfd_create(CLOCK_MONOTONIC, 0);
 	its.it_value.tv_sec = 30;
@@ -42,39 +42,39 @@ void interval_proc(void){
 
 	while(1){
 		// get temperature
-                fp0 = fopen("/sys/class/thermal/thermal_zone0/temp", "r");
+		fp0 = fopen("/sys/class/thermal/thermal_zone0/temp", "r");
 		fp1 = fopen("/sys/class/thermal/thermal_zone1/temp", "r");
 		fp2 = fopen("/sys/class/thermal/thermal_zone2/temp", "r");
 
-                fgets(buffer0, sizeof(buffer0), fp0);
-                fgets(buffer1, sizeof(buffer1), fp1);
-                fgets(buffer2, sizeof(buffer2), fp2);
+		fgets(buffer0, sizeof(buffer0), fp0);
+		fgets(buffer1, sizeof(buffer1), fp1);
+		fgets(buffer2, sizeof(buffer2), fp2);
 
 		fclose(fp2);
 		fclose(fp1);
 		fclose(fp0);
 
-                if(debug_flag == 1){
+		if(debug_flag == 1){
 			printf("cpu-temperature0: %.1lf[℃]\n", atof(buffer0)/1000);
-        	        printf("cpu-temperature1: %.1lf[℃]\n", atof(buffer1)/1000);
-                	printf("cpu-temperature2: %.1lf[℃]\n", atof(buffer2)/1000);
+			printf("cpu-temperature1: %.1lf[℃]\n", atof(buffer1)/1000);
+			printf("cpu-temperature2: %.1lf[℃]\n", atof(buffer2)/1000);
 		}
 
-                // max temperature check
-                if((buffer0 >= buffer1) && (buffer0 >= buffer2)){
-                	if(debug_flag == 1){
+		// max temperature check
+		if((buffer0 >= buffer1) && (buffer0 >= buffer2)){
+			if(debug_flag == 1){
 				printf("max cpu-temperature: %.1lf[℃]\n", atof(buffer0)/1000);
 			}
 			temp = atof(buffer0)/1000;
 		}	
-                if((buffer1 >= buffer0) && (buffer1 >= buffer2)){
+		if((buffer1 >= buffer0) && (buffer1 >= buffer2)){
 			if(debug_flag == 1){
 				printf("max cpu-temperature: %.1lf[℃]\n", atof(buffer1)/1000);	
 			}
 			temp = atof(buffer1)/1000;
 		}
 		if((buffer2 >= buffer0) && (buffer2 >= buffer1)){
-                	if(debug_flag == 1){
+			if(debug_flag == 1){
 				printf("max cpu-temperature: %.1lf[℃]\n", atof(buffer2)/1000);
 			}
 			temp = atof(buffer2)/1000;
@@ -92,28 +92,28 @@ void interval_proc(void){
 			}
 		}else if(temp >= 50.0){     // 100%
 			gpio_l();
-                        gpio_h();
+			gpio_h();
 			gpio_l();
-                        gpio_l();
-                        gpio_h();
+			gpio_l();
+			gpio_h();
 			if(debug_flag == 1){
 				printf("\n50.0~ : 01001\n");
 			}
 		}else{     // 0%
 			gpio_l();
-                        gpio_l();
-                        gpio_l();
-                        gpio_h();
-                        gpio_h();
+			gpio_l();
+			gpio_l();
+			gpio_h();
+			gpio_h();
 			if(debug_flag == 1){
 				printf("\n~35.0 : 00011\n");
 			}
 		}
 		
 		// ここからは、インタバールを待つための処理
-               	r_size = read(tfd,&t_cnt,sizeof(t_cnt));
+		r_size = read(tfd,&t_cnt,sizeof(t_cnt));
 		if(debug_flag == 1){
-               		// 30秒経たないとreadから帰ってこない。
+			// 30秒経たないとreadから帰ってこない。
 			if(r_size == sizeof(t_cnt)){
 				clock_gettime(CLOCK_REALTIME, &curTime);
 				printf("Timer count = %lu, Now=%ld, ", t_cnt, curTime.tv_sec);
@@ -124,7 +124,7 @@ void interval_proc(void){
 					printf("Interval = %10ld.%09ld\n", curTime.tv_sec-lastTime.tv_sec, curTime.tv_nsec-lastTime.tv_nsec);
 				}
 			}
- 			lastTime = curTime;		
+ 			lastTime = curTime;
 		}
 	}
 	close(tfd);
@@ -167,8 +167,8 @@ void gpio_l(void){
 		printf("enable file open error.\n");
 		exit(EXIT_FAILURE);
 	}
-        fputs("1", fp0);
-        fclose(fp0);
+	fputs("1", fp0);
+	fclose(fp0);
 	if((fp1 = fopen("/sys/class/pwm/pwmchip0/pwm0/enable", "w")) == NULL){
 		printf("enable file open error.\n");
 		exit(EXIT_FAILURE);
