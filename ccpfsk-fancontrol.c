@@ -110,9 +110,9 @@ void interval_proc(void){
 			}
 		}
 		
+		// ここからは、インタバールを待つための処理
+               	r_size = read(tfd,&t_cnt,sizeof(t_cnt));
 		if(debug_flag == 1){
-			// ここからは、インタバールを待つための処理
-               		r_size = read(tfd,&t_cnt,sizeof(t_cnt));
                		// 30秒経たないとreadから帰ってこない。
 			if(r_size == sizeof(t_cnt)){
 				clock_gettime(CLOCK_REALTIME, &curTime);
@@ -125,7 +125,6 @@ void interval_proc(void){
 				}
 			}
  			lastTime = curTime;		
-			sleep(1);
 		}
 	}
 	close(tfd);
